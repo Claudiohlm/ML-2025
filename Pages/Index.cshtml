@@ -1,0 +1,55 @@
+﻿@page
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Análise de Preços";
+}
+
+<div class="container">
+    <h1>PriceAI - Analisador de Preços 🤖</h1>
+    <p>
+        Veja os preços e descontos para cada peça em diversas lojas.
+    </p>
+
+    <form method="post">
+        <div class="search-box input-group mb-3">
+            <input asp-for="ProductInput"
+                   type="text"
+                   placeholder="Ex: Ryzen, RTX 3060..."
+                   class="form-control" />
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-primary">Buscar Preços!</button>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.ListaPrecos.Any())
+    {
+        <table class="table table-bordered table-striped">
+            <thead class="thead-light">
+                <tr>
+                    <th>Peça</th>
+                    <th>Melhor Preço</th>
+                    <th>Loja</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ListaPrecos)
+                {
+                    var melhorPreco = Math.Min(Math.Min(item.Loja1Preco, item.Loja2Preco), item.Loja3Preco);
+                    var lojaMelhor = item.Loja1Preco == melhorPreco ? "Loja 1" :
+                    (item.Loja2Preco == melhorPreco ? "Loja 2" : "Loja 3");
+                    <tr>
+                        <td>@item.Peca</td>
+                        <td>R$ @melhorPreco.ToString("F2")</td>
+                        <td>@lojaMelhor</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-warning">Nenhum dado encontrado para a busca.</div>
+    }
+</div>
