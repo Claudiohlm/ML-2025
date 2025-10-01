@@ -23,3 +23,4 @@ Global
 		SolutionGuid = {C7603DE6-E2D5-46AE-BA0C-87B12CCBB390}
 	EndGlobalSection
 EndGlobal
+git remote set-url origin https://github.com/Matheus362/PriceAI.csproj
