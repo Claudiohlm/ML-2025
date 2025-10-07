@@ -8,6 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\css\Style.css" />
+    <Content Remove="wwwroot\favicon.ico" />
+    <Content Remove="wwwroot\js\Main.js" />
+    <Content Remove="wwwroot\NovaPasta\PriceAI Background - Ultra Subtle Price Tag.jpg" />
+    <Content Remove="wwwroot\NovaPasta\PriceAI Clean Website Background.jpg" />
+    <Content Remove="wwwroot\NovaPasta\PriceAI Clean Website Background.png" />
+    <Content Remove="wwwroot\NovaPasta\PriceAI Clean Website Background2.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.ML" Version="4.0.2" />
     <PackageReference Include="Microsoft.ML" Version="4.0.2" />
   </ItemGroup>

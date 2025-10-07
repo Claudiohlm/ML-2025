@@ -1,55 +1,87 @@
 ﻿@page
 @model IndexModel
-
 @{
-    ViewData["Title"] = "Análise de Preços";
+    ViewData["Title"] = "Sentiment Analysis";
 }
 
-<div class="container">
-    <h1>PriceAI - Analisador de Preços 🤖</h1>
-    <p>
-        Veja os preços e descontos para cada peça em diversas lojas.
-    </p>
 
-    <form method="post">
-        <div class="search-box input-group mb-3">
-            <input asp-for="ProductInput"
-                   type="text"
-                   placeholder="Ex: Ryzen, RTX 3060..."
-                   class="form-control" />
-            <div class="input-group-append">
-                <button type="submit" class="btn btn-primary">Buscar Preços!</button>
+
+<div class="text-center">
+   <strong> <h4 class="display-4">Encontre os  <p style="text-shadow: 0 0 10px darkslateblue;"><strong><span style="color: darkslateblue;">melhores preços </span></strong></p> para seus produtos </h4>
+    </strong>
+   <strong>
+        <p>
+            Compare preços de produtos de tecnologia em tempo real, <br />
+            e receba alertas de descontos para fazer a compra ideial
+        </p>
+    </strong>
+</div>
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <form method="post">
+            <div class="form-group mb-3">
+                <div class="container"
+                     style="background-color: rgba(128,128,128,0.2);
+                            padding: 20px;
+                            border-radius: 12px;
+                            box-shadow: 0 0 10px lightgray;">
+                    <textarea asp-for="InputText"
+                              class="form-control"
+                              style="background-color: rgba(211,211,211,0.8);
+                                     color: #000;
+                                     border-radius: 8px;"
+                              placeholder="🔍︎ Buscar produtos..."
+                              id="text-input"
+                              rows="4">
+                    </textarea>
+
+                    <button type="submit"
+                            class="btn btn-success" mt-5"
+                            style="width: 100%;">
+                        Comece a comparar →
+                    </button>
+                </div>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
+</div>
 
-    @if (Model.ListaPrecos.Any())
-    {
-        <table class="table table-bordered table-striped">
-            <thead class="thead-light">
+
+
+
+@if (Model.Resultados != null && Model.Resultados.Any())
+{
+    <div class="container mt-4">
+        <h4>Resultados encontrados:</h4>
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <th>Peça</th>
-                    <th>Melhor Preço</th>
+                    <th>Produto</th>
                     <th>Loja</th>
+                    <th>Preço</th>
+                    <th>Desconto</th>
+                    <th>Preço Final</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.ListaPrecos)
+                @foreach (var produto in Model.Resultados)
                 {
-                    var melhorPreco = Math.Min(Math.Min(item.Loja1Preco, item.Loja2Preco), item.Loja3Preco);
-                    var lojaMelhor = item.Loja1Preco == melhorPreco ? "Loja 1" :
-                    (item.Loja2Preco == melhorPreco ? "Loja 2" : "Loja 3");
                     <tr>
-                        <td>@item.Peca</td>
-                        <td>R$ @melhorPreco.ToString("F2")</td>
-                        <td>@lojaMelhor</td>
+                        <td>@produto.Nome</td>
+                        <td>@produto.Loja</td>
+                        <td>R$ @produto.Preco.ToString("F2")</td>
+                        <td>@produto.Desconto%</td>
+                        <td>R$ @produto.PrecoFinal.ToString("F2")</td>
                     </tr>
                 }
             </tbody>
         </table>
-    }
-    else
-    {
-        <div class="alert alert-warning">Nenhum dado encontrado para a busca.</div>
-    }
-</div>
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(Model.InputText))
+{
+    <div class="alert alert-warning mt-4">
+        Nenhum produto encontrado para "<strong>@Model.InputText</strong>".
+    </div>
+}

@@ -1,30 +1,25 @@
 using Microsoft.ML;
+using ML_2025.Models;
 using ML_2025.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adiciona suporte a Razor Pages
+
 builder.Services.AddRazorPages();
 
-// Inicializa ML.NET para uso futuro
-var mlContext = new MLContext();
-builder.Services.AddSingleton(mlContext);
 
 var pastaModelos = Path.Combine(AppContext.BaseDirectory, "MLModels");
-if (!Directory.Exists(pastaModelos))
-{
-    Directory.CreateDirectory(pastaModelos);
-}
+if (!File.Exists(Path.Combine(pastaModelos, "model.zip")))
+    ModelBuilder.Treinar(pastaModelos);
 
+var mlContext = new MLContext();
 var modelPath = Path.Combine(pastaModelos, "model.zip");
+var model = mlContext.Model.Load(modelPath, out _);
+var engine = mlContext.Model.CreatePredictionEngine<Produto, ProductPrediction>(model);
 
-if (File.Exists(modelPath))
-{
-    // Carrega o modelo apenas para manter compatibilidade futura
-    mlContext.Model.Load(modelPath, out _);
-}
 
-// Build do app
+builder.Services.AddSingleton(engine);
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -37,9 +32,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
-app.MapRazorPages();
+app.MapRazorPages(); 
 
-// Chama o treinamento no startup
-ModelBuilder.Treinar(pastaModelos);
+app.MapPost("/predict", (CompareRequest request, PredictionEngine<Produto, ProductPrediction> engine) =>
+{
+    var prediction = engine.Predict(new Produto { Text = request.Text });
+    return Results.Ok(prediction);
+});
 
 app.Run();
